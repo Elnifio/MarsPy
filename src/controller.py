@@ -10,13 +10,33 @@ import sim_regs
 from datetime import datetime
 import sim_mem
 
+"""
+This module defines the basic behavior of a mips "instruction memory". 
+"""
+
 __author__ = "Elnifio"
 
+# Advances Program Counter by 4
+# @Params: sim_regs, which is a sim_regs.Register object of simulated registers.
+# Returns: Nothing, this function directly modifies data in the sim_regs.Register object.
+# Raises: ValueError when "PC" not found in sim_regs.Register object, this usually occurs when customized registers are passed into this function.
 def advance_pc(sim_regs):
     if not ("PC" in sim_regs):
         raise ValueError("Program Counter not found, please check your configuration.")
     sim_regs["PC"] = cv.dec_to_hex(cv.hex_to_dec(sim_regs["PC"]) + 4)
 
+# A MIPS Controller that process data based on given commands.
+# @Params: 
+#                   command: A string which is the command content
+#                   sim_mems: A sim_mem.Memory object
+#                   sim_regs: A sim_regs.Register object
+# Notice that the command can only contains the original name of registers, i.e., you should not use aliases such as "$ra"
+# Also notice that the command should be written in "MIPS conventions", such as "add $8, $9, $10" and "lw $8, 0x04($0)"
+# Return: Nothing, since this function directly modifies data in the sim_regs.Register object and sim_mem.Memory object.
+# Raises:
+#                   ValueError if this command does not exist in the database.
+#                   ValueError if the command is not found in either R_TYPE, I_TYPE, or J_TYPE. This might occur when the database is modified but the new functions are not implemented in this function to avoid infinite loop. 
+#                   ValueError if the command is not found in all of R_TYPE, I_TYPE, and J_TYPE. This Error prevents infinite loop in extremely special cases. If you encountered this Error, please report to me on Github. 
 def control(command, sim_mems, sim_regs):
     command = command.replace(",", "")
     cmd_list = re.split(r'\s+', command)
@@ -116,8 +136,9 @@ def control(command, sim_mems, sim_regs):
                 pass
             else:
                 raise ValueError("If you see this message, please report to me on Github. ")
+              
                     
-
+# This is just a efficiency test. If you wish to run this test, enter `python3 controller.py` in your terminal. 
 def test():
     MAX = 10000
     regs = sim_regs.Register()

@@ -3,8 +3,27 @@ import functools
 import baseConverter as cv
 import Termination
 
+
+"""
+This module defines Syscall behaviors.
+"""
+
+
 __author__ = "Elnifio"
 
+
+# Syscall instruction.
+# @Params: 
+#               sim_regs: a sim_regs.Register object
+#               sim_mem: a sim_mem.Memory object
+# Return: None
+# Raises:
+#                   ValueError if $v0 not found in sim_regs
+#                   ValueError if specific register not found in sim_regs (for instance, syscall 8 will check both $a0 and $a1)
+#                   ValueError if unsupported syscall (currently only support 1, 4, 5, 8, 10)
+#                   Termination.Termination if syscall 10, indicating Program Finished.
+# Notice: Because of the significant difference between input() and fgets(), I don't know how to  implement a "read char" function directly. :(
+# Some MIPS codes should be modified (or modify the input) to adapt to this difference. 
 def syscall(sim_regs, sim_mems):
     v0 = "$v0"
     MAX = 100

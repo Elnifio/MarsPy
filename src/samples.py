@@ -3,11 +3,16 @@ import sim_regs
 import sim_mem
 import baseConverter as cv
 
+
+"""
+Sample Programs. type in `python3 samples.py`, and follow the instruction provided. 
+"""
+
 __author__ = "Elnifio"
 
 
 # Add the first five integers
-def sum():
+def sum_unambiguous():
     memory = sim_mem.Memory()
     insts = {
         # main
@@ -26,6 +31,7 @@ def sum():
     model.run_instructions(insts, memory, ["$8", "$9", "$10"])
 
 
+# Calculates the sum of an array
 def sumArray():
     memory = sim_mem.Memory()
     memory.set_mem_by_word(0, "0x00000000") # Allocate space for sum, address at 0x0
@@ -59,6 +65,7 @@ def sumArray():
     print("After Executing: Mem[8](sum): " + memory.get_mem_by_word(0))
 
 
+# Calculates the largest Fibonacci number smaller than 100
 def Fibonacci(): 
     memory = sim_mem.Memory()
     memory.set_mem_by_word(0, "0x00000000") # int x = 0; x = mem[0x0]
@@ -82,6 +89,10 @@ def Fibonacci():
     print("After Executing: Mem[0](x): " + memory.get_mem_by_word(0))
 
 
+# Calculates matrix multiplication. 
+# Should first input matrix size (no larger than 10 * 10)
+# And then enter numbers for Matrix A and Matrix B
+# New matrix printed in the terminal.
 def matrixMultiplication():
     memory = sim_mem.Memory()
     memory.allocate_space(0, 400)
@@ -187,7 +198,7 @@ def matrixMultiplication():
         "0x00003120": "add $4, $0, $12",
         "0x00003124": "syscall",
         "0x00003128": "addi $2, $0, 4",
-        "0x0000312C": "addi $4, $0, 1202", # TODO
+        "0x0000312C": "addi $4, $0, 1202", 
         "0x00003130": "syscall",
         "0x00003134": "addi $10, $10, 1",
         "0x00003138": "slt $11, $10, $8", 
@@ -207,6 +218,9 @@ def matrixMultiplication():
     model.run_instructions(insts, memory, {})
 
 
+# prints all binary patterns of given length
+# Should enter the length of binary patterns 
+# Patterns printed in the terminal
 def makePatterns():
     memory = sim_mem.Memory()
     memory.allocate_space(0, 84)
@@ -288,4 +302,22 @@ def makePatterns():
 
 
 if __name__ == "__main__":
-    makePatterns()
+    print("Please select the demo program:")
+    print("1. sum - sums the values in range(0, 5)")
+    print("2. sumArray - sums values in [7, 8, 9, 10, 8]")
+    print("3. Fibonacci - calculates the largest Fibonacci number lower than 100")
+    print("4. Matrix Multiplication - calculates matrix multiplication (using loops)")
+    print("5. Make Patterns - prints binary patterns of given length (using recursions)")
+    option = input()
+    if option == "1":
+        sum_unambiguous()
+    elif option == "2":
+        sumArray()
+    elif option == "3":
+        Fibonacci()
+    elif option == "4":
+        matrixMultiplication()
+    elif option == "5":
+        makePatterns()
+    else:
+        print("Option not found. Have a nice day :)")

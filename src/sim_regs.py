@@ -1,6 +1,14 @@
+"""
+A Simulated Register. Notice that it essentially is a dictionary. 
+"""
+
+
 __author__ = "Elnifio"
 
+
 class Register(object):
+    # Constructor. No parameter is required. 
+    # Notice that the value of Program Counter is set to "0x00003000" by default. Other registers are set to 0
     def __init__(self):
         self.__regs = {
             "$0": "0x00000000", # $0
@@ -40,15 +48,19 @@ class Register(object):
             "lo": "0x00000000" # Low
         }
 
+    # Metamethod for supporting operations such as Register()["$31"]
     def __getitem__(self, name):
         return self.__regs[name]
     
+    # Metamethod for supporting operations such as Register()["$31"] = "0x00003000"
     def __setitem__(self, name, value):
         self.__regs[name] = value
 
+    # Metamethod for supporting operations such as "$31" in Register()
     def __contains__(self, item):
         return item in self.__regs
 
+    # Returns the dictionary itself. 
     def getRegs(self):
         return self.__regs
         
