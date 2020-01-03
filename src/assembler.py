@@ -4,6 +4,14 @@ import baseConverter as cv
 from parser import path, registers, numeric_registers, find_register, get_decimal_value
 
 
+"""
+This serves as a substitution for parser.py
+Not yet completed
+"""
+
+__author__ = "Elnifio"
+
+
 def decompose(contents):
     memory_labels = {}
     instruction_labels = {}
