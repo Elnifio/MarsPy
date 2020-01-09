@@ -26,7 +26,7 @@ def setupMemory(instruction, memory, mem_address, memory_labels):
     pass
 
 
-def read_memory(instruction):
+def read_memory(instruction, memory, start_address):
     val_name = ""
     val_type = ""
     val_value = []
@@ -63,11 +63,39 @@ def read_memory(instruction):
                 comment_indicator = True
                 break
             elif char_at_position == '"':
-                if instruction[counter-1] != "\\":
+                if instruction[counter-1] != '\\':
                     quote_counter += 1
-            val_value[0] += char_at_position
+                    if quote_counter & 1 == 0:
+                        value_indicator = False
+                    elif quote_counter & 1 != 0:
+                        value_indicator = True
+                        value_counter += 1
+                        val_value.append("")
+                    counter += 1
+                    continue
+            if value_indicator:
+                val_value[value_counter] += char_at_position
             counter += 1
-    print(val_name + " --- " + val_type + " --- " + str(val_value))
+        print(str(val_value))
+        for value in val_value:
+            if not value == "":
+                memory.store_string_at_address(start_address, value)
+                print("Storing value [" + value + "] at address [" + hex(start_address) + "]")
+                start_address += (get_string_len(value) + 1) 
+                print("Current address is " + hex(start_address))
+                
+
+def get_string_len(in_str):
+    counter = 1
+    out = ""
+    while counter < len(in_str) - 1:
+        if in_str[counter] == "\\":
+            if in_str[counter-1] != "\\":
+                counter += 1
+                continue
+        out += in_str[counter]
+        counter += 1
+    return len(out)
 
 
 if __name__ != "__main__":
@@ -78,9 +106,11 @@ if __name__ != "__main__":
     with open(path + "/" + f_name, 'r') as f:
         contents = f.read().split("\n")
 else:
-    read_memory("asterisk: .asciiz \"*\"")
-    read_memory("space: .space 84")
-    read_memory("word: .ascii \"*\"")
-    read_memory("word: .word 0x0000000, 0x00000000")
+    content = ""
+    with open("test.asm", "r") as f:
+        content = f.read().split("\n")
+    mem = 0x0
+    read_memory(content[0], Memory(), mem)
+    # read_memory(content[1])
 
 

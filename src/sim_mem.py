@@ -97,7 +97,6 @@ class Memory(object):
             x_ascii = ord(x)
             self.set_mem_by_byte(address + counter, cv.dec_to_hex(x_ascii))
             counter += 1
-        counter += 1
         self.set_mem_by_byte(address + counter, "0x00")
 
     # Stores strings into memory, not adding "\0" after it.
@@ -117,7 +116,7 @@ class Memory(object):
     # Return: None
     # Raises: Refer to check_validity method
     def store_integer_at_address(self, address, value):
-        self.check_validity(address)
+        self.check_validity(address, True)
         self.set_mem_by_word(address, cv.dec_to_hex(value))
 
     # Allocates space to memory. Notice that it actually does nothing except validating the start and end address
