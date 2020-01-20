@@ -62,12 +62,15 @@ class Mem(object):
         self.__mems[address >> 2] = new_value
         
     def store_string_at_address(self, address, value):
-        self.store_string_at_address_without_terminator(address, value)
+        new_address = self.store_string_at_address_without_terminator(address, value)
         self.set_mem_by_byte(address + len(value), 0)
+        return new_address + 1
+        
     
     def store_integer_at_address(self, address, value):
         self.check_validity(address, True)
         self.set_mem_by_word(address, value)
+        return address + 4
 
     def store_string_at_address_without_terminator(self, address, value):
         self.check_validity(address)
@@ -76,16 +79,41 @@ class Mem(object):
             x_ascii = ord(x)
             self.set_mem_by_byte(address + counter, x_ascii)
             counter += 1
+        return address + counter
         
     def allocate_space(self, start_address, length):
         self.check_validity(start_address)
         self.check_validity(start_address + length)
+        return start_address + length
     
     def store_char_at_address(self, address, value):
         self.check_validity(address)
         val_ascii = ord(value)
         self.set_mem_by_byte(address, val_ascii)
         self.set_mem_by_byte(address + 1, 0)
+        return address + 2
+
+    def get_mem_dict(self, end_address):
+        if isinstance(end_address, str):
+            end_address = cv.hex_to_dec(end_address)
+        self.check_validity(end_address, True)
+        return {cv.dec_to_hex(x):self.get_mem_by_word(x) for x in range(end_address) if x & 3 == 0}
+
+    def get_ascii_dict(self, end_address):
+        if isinstance(end_address, str):
+            end_address = cv.hex_to_dec(end_address)
+        self.check_validity(end_address, True)
+        return {cv.dec_to_hex(x):functools.reduce(lambda a, b: b + " " + a, [chr(cv.hex_to_dec(self.get_mem_by_byte(y))) for y in range(x, x+4)]) for x in range(end_address) if x & 3 == 0}
+    
+    def print_mem_dict(self, end_address):
+        mem_dict = self.get_mem_dict(end_address)
+        for key, value in mem_dict.items():
+            print(key + ": " + value)
+
+    def print_ascii_dict(self, end_address):
+        mem_dict = self.get_ascii_dict(end_address)
+        for key, value in mem_dict.items():
+            print("%s: %r" % (key, value))
     pass
 
 
@@ -95,7 +123,9 @@ if __name__ == "__main__":
     m.set_mem_by_byte(0x5, 0x1234ABCD)
     m.set_mem_by_byte(0x6, 0x00000006)
     m.set_mem_by_byte(0x7, 0x00000007)
-    m.store_string_at_address(0x0, "hello")
+    m.store_string_at_address(0x0, "hello\n")
     m.store_integer_at_address(0x8, 0x00001234)
     print(m.getMem()[:10])
+    print(m.get_ascii_dict(0x0C))
+    m.print_ascii_dict(0x0C)
     

@@ -1,7 +1,9 @@
 from sim_mem import Memory
+from sim_mem_2 import Mem
 import os, re, functools, model
 import baseConverter as cv
 from parser import path, registers, numeric_registers, find_register, get_decimal_value
+from parse import *
 
 
 """
@@ -25,6 +27,9 @@ def decompose(contents):
 def setupMemory(instruction, memory, mem_address, memory_labels):
     pass
 
+
+def parseAsciiz(input_string):
+    pass
 
 def read_memory(instruction, memory, start_address):
     val_name = ""
@@ -52,6 +57,7 @@ def read_memory(instruction, memory, start_address):
         counter += 1
     if val_type == ".asciiz":
         value_indicator = True
+        val_value = parseAsciiz(instruction[counter:])
         val_value.append("")
         while counter < len(instruction):
             if instruction[counter] != " ":
@@ -73,15 +79,19 @@ def read_memory(instruction, memory, start_address):
                         val_value.append("")
                     counter += 1
                     continue
+            elif char_at_position == "\\":
+                char_at_position = instruction[counter:counter + 2]
+                print("%r" % char_at_position)
+                counter += 1
             if value_indicator:
                 val_value[value_counter] += char_at_position
             counter += 1
         print(str(val_value))
         for value in val_value:
             if not value == "":
-                memory.store_string_at_address(start_address, value)
                 print("Storing value [" + value + "] at address [" + hex(start_address) + "]")
-                start_address += (get_string_len(value) + 1) 
+                start_address = memory.store_string_at_address(start_address, value)
+                # start_address += (get_string_len(value) + 1) 
                 print("Current address is " + hex(start_address))
                 
 
@@ -110,7 +120,9 @@ else:
     with open("test.asm", "r") as f:
         content = f.read().split("\n")
     mem = 0x0
-    read_memory(content[0], Memory(), mem)
+    a = Mem()
+    read_memory(content[0], a, mem)
+    a.print_ascii_dict(0x50)
     # read_memory(content[1])
 
 
